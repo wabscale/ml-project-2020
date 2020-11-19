@@ -1,0 +1,76 @@
+{{- if .Values.webUI.ingress.enabled -}}
+
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ template "dask.fullname" . }}-webui-ingress
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "dask.fullname" . }}-webui
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+    component: webui-ingress-route
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - kind: Rule
+    match: Host(`{{ .Values.webUI.ingress.hostname }}`)
+    middlewares:
+    - name: dask-auth
+      namespace: {{ .Release.Namespace }}
+    services:
+    - name: {{ template "dask.fullname" . }}-scheduler
+      port: {{ .Values.webUI.servicePort }}
+  tls:
+    certResolver: tls
+---
+
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: strip-sched
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "dask.fullname" . }}-webui
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  stripPrefix:
+    prefixes:
+      - "/sched"
+
+---
+
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ template "dask.fullname" . }}-scheduler-ingress
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "dask.fullname" . }}-scheduler
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+    component: scheduler-ingress-route
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - kind: Rule
+    match: Host(`{{ .Values.webUI.ingress.hostname }}`) && PathPrefix(`/sched`)
+    middlewares:
+    - name: dask-auth
+      namespace: {{ .Release.Namespace }}
+    - name: strip-sched
+      namespace: {{ .Release.Namespace }}
+    services:
+    - name: {{ template "dask.fullname" . }}-scheduler
+      port: {{ .Values.scheduler.servicePort }}
+  tls:
+    certResolver: tls
+
+
+{{- end -}}

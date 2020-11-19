@@ -1,0 +1,47 @@
+{{- if .Values.jupyter.ingress.enabled -}}
+
+# Declaring the user list
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: dask-auth
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "dask.fullname" . }}-jupyter
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+
+spec:
+  basicAuth:
+    secret: dask-auth
+
+--- 
+
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ template "dask.fullname" . }}-jupyter-ingress
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "dask.fullname" . }}-jupyter
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+    component: jupyter-ingress-route
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - kind: Rule
+    match: Host(`{{ .Values.jupyter.ingress.hostname }}`)
+    middlewares:
+    - name: dask-auth
+      namespace: {{ .Release.Namespace }}
+    services:
+    - name: {{ template "dask.fullname" . }}-jupyter
+      port: {{ .Values.jupyter.servicePort }}
+  tls:
+    certResolver: tls
+
+{{- end -}}
