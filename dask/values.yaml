@@ -51,13 +51,13 @@ worker:
     dask_worker: "dask-worker"
     pullSecrets:
     #  - name: regcred
-  replicas: 8
+  replicas: 3
   default_resources:  # overwritten by resource limits if they exist
     cpu: 2
     memory: "4G"
   env:
     - name: EXTRA_PIP_PACKAGES
-      value: s3fs dask-ml gcsfs matplotlib pandas numpy --upgrade
+      value: "nltk keras torch tensorflow sklearn dask-ml matplotlib pandas numpy --upgrade"
   #  - name: EXTRA_APT_PACKAGES
   #    value: build-essential openssl
   #  - name: EXTRA_CONDA_PACKAGES
@@ -117,7 +117,7 @@ jupyter:
   #  - name: EXTRA_CONDA_PACKAGES
   #    value: "numba xarray -c conda-forge"
      - name: EXTRA_PIP_PACKAGES
-       value: "s3fs dask-ml matplotlib pandas numpy --upgrade"
+       value: "nltk keras torch tensorflow sklearn dask-ml matplotlib pandas numpy --upgrade"
   args:
   #  - "start.sh"
   #  - "jupyter"
@@ -129,7 +129,7 @@ jupyter:
   resources:
    limits:
      cpu: 4
-     memory: 4G
+     memory: 8G
    requests:
      cpu: 4
      memory: 4G

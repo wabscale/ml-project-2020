@@ -1,0 +1,10 @@
+numpy
+pandas
+dask[complete]
+sklearn
+matplotlib
+notebook
+jupyterlab
+nltk
+tensorflow
+tensorflow-gpu

@@ -2,3 +2,5 @@ archive
 *.zip
 *.tar.gz
 *.tgz
+venv
+.ipynb_checkpoints
