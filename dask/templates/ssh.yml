@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ml-ssh
+  labels:
+    app: {{ template "dask.name" . }}
+    heritage: {{ .Release.Service | quote }}
+    release: {{ .Release.Name | quote }}
+    chart: {{ template "dask.chart" . }}
+    component: ssh
+spec:
+  selector:
+    matchLabels:
+      app: {{ template "dask.name" . }}
+      release: {{ .Release.Name | quote }}
+      component: ssh
+  template:
+    metadata:
+      labels:
+        app: {{ template "dask.name" . }}
+        release: {{ .Release.Name | quote }}
+        component: ssh
+    spec:
+      containers:
+      - name: ssh-server
+        image: linuxserver/openssh-server
+        ports:
+        - containerPort: 2222
+        env:
+        - name: PUID
+          value: "1000"
+        - name: PGID
+          value: "1000"
+        - name: TZ
+          value: "America/New_York"
+        - name: SUDO_ACCESS
+          value: "true"
+        - name: PASSWORD_ACCESS
+          value: "true"
+        - name: USER_PASSWORD
+          value: "ml"
+        - name: USER_NAME
+          value: "ml"
+        volumeMounts:
+        - name: jupyter-persistent
+          mountPath: /data
+      volumes:
+      - name: jupyter-persistent
+        persistentVolumeClaim:
+          claimName: {{ .Release.Name }}-jupyter-persistent
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ml-ssh
+  labels:
+    app: {{ template "dask.name" . }}
+    heritage: {{ .Release.Service | quote }}
+    release: {{ .Release.Name | quote }}
+    chart: {{ template "dask.chart" . }}
+    component: ssh
+spec:
+  type: NodePort
+  ports:
+  - port: 2222
+    protocol: TCP
+  selector:
+    app: {{ template "dask.name" . }}
+    release: {{ .Release.Name | quote }}
+    component: ssh
+    
