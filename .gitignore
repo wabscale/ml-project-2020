@@ -1,6 +1,8 @@
 archive
+venv
+.ipynb_checkpoints
 *.zip
 *.tar.gz
 *.tgz
-venv
-.ipynb_checkpoints
+*.gzip
+*.h5
