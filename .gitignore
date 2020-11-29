@@ -6,3 +6,4 @@ venv
 *.tgz
 *.gzip
 *.h5
+.models
