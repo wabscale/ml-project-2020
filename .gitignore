@@ -7,3 +7,5 @@ venv
 *.gzip
 *.h5
 .models
+
+logs
