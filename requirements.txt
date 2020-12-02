@@ -9,3 +9,4 @@ nltk
 tensorflow
 tensorflow-gpu
 fastparquet
+tqdm

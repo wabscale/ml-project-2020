@@ -1,4 +1,4 @@
-archive
+archive*
 venv
 .ipynb_checkpoints
 *.zip
@@ -8,5 +8,6 @@ venv
 *.h5
 .models
 *.pickle
-
+*.parquet.gz
 logs
+*.csv

@@ -51,9 +51,9 @@ worker:
     dask_worker: "dask-worker"
     pullSecrets:
     #  - name: regcred
-  replicas: 3
+  replicas: 6
   default_resources:  # overwritten by resource limits if they exist
-    cpu: 2
+    cpu: 4
     memory: "4G"
   env:
     - name: EXTRA_PIP_PACKAGES
@@ -64,12 +64,12 @@ worker:
   #    value: numba xarray -c conda-forge
   resources:
     limits:
-      cpu: 2
-      memory: 4G
+      cpu: 8
+      memory: 6G
       # nvidia.com/gpu: 1
     requests:
       cpu: 2
-      memory: 4G
+      memory: 2G
       # nvidia.com/gpu: 1
   tolerations: []
   nodeSelector: {}
@@ -128,7 +128,7 @@ jupyter:
     # c.NotebookApp.port = 8888
   resources:
    limits:
-     cpu: 4
+     cpu: 8
      memory: 8G
    requests:
      cpu: 4
